@@ -1,0 +1,9 @@
+{
+  "name": "Majid Music Player",
+  "short_name": "Majid Music",
+  "start_url": "/music-player/",
+  "display": "standalone",
+  "background_color": "#050308",
+  "theme_color": "#050308",
+  "icons": []
+}
