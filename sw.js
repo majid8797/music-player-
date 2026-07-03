@@ -1,4 +1,4 @@
-const CACHE_NAME = 'majid-music-v1';
+const CACHE_NAME = 'majid-music-v2';
 const urlsToCache = [
   '/music-player/',
   '/music-player/index.html',
