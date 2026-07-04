@@ -148,7 +148,7 @@
 
   .playlist-grid{
     position:relative; z-index:2; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
-    padding:6px 18px calc(var(--safe-bottom) + 100px); display:grid; grid-template-columns:1fr 1fr; gap:16px; align-content:start;
+    padding:6px 18px calc(var(--safe-bottom) + 90px); display:grid; grid-template-columns:1fr 1fr; gap:16px; align-content:start;
   }
   .playlist-card{
     min-width:0; border-radius:var(--radius-md); overflow:hidden; background:var(--glass-bg); border:1px solid var(--glass-border);
@@ -306,7 +306,7 @@
 
   .song-list{
     flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
-    padding:8px 16px calc(var(--safe-bottom) + 110px);
+    padding:8px 16px calc(var(--safe-bottom) + 100px);
   }
   .song-row{
     display:flex; align-items:center; gap:10px; padding:9px 8px; border-radius:var(--radius-sm); transition:background .15s ease;
@@ -320,7 +320,7 @@
   .song-row-duration{ flex-shrink:0; font-size:11px; color:var(--text-faint); font-variant-numeric:tabular-nums; }
 
   .mini-player{
-    position:absolute; left:14px; right:14px; bottom:calc(var(--safe-bottom) + 10px); z-index:30;
+    position:absolute; left:14px; right:14px; bottom:calc(var(--safe-bottom) + 6px); z-index:30;
     display:flex; align-items:center; gap:12px; padding:9px 12px; border-radius:100px;
     background:rgba(20,14,35,0.72); border:1px solid var(--glass-border);
     backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%);
@@ -339,7 +339,7 @@
     background:var(--near-black); transform:translateY(100%);
     transition:transform .45s cubic-bezier(.25,.8,.3,1);
     z-index:40; display:flex; flex-direction:column;
-    padding:calc(var(--safe-top) + 6px) 24px calc(var(--safe-bottom) + 10px); overflow:hidden;
+    padding:calc(var(--safe-top) + 4px) 24px calc(var(--safe-bottom) + 4px); overflow:hidden;
   }
   .now-playing.open{ transform:translateY(0); }
   .np-bg{ position:absolute; inset:0; z-index:0; background:radial-gradient(circle at 50% 0%, rgba(91,63,224,0.35), transparent 60%), var(--near-black); }
@@ -364,15 +364,9 @@
     border-radius:var(--radius-lg); overflow:hidden;
     box-shadow:0 25px 60px -18px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.08);
     background:linear-gradient(140deg,var(--card-2),var(--card));
-    transition:transform .4s cubic-bezier(.25,.8,.3,1), opacity .4s cubic-bezier(.25,.8,.3,1);
-    will-change:transform, opacity;
     display:flex; align-items:center; justify-content:center;
   }
-  .np-disc-slide.current{ transform:translateX(0); opacity:1; z-index:2; }
-  .np-disc-slide.exit-left{ transform:translateX(-120%); opacity:0; z-index:1; pointer-events:none; }
-  .np-disc-slide.exit-right{ transform:translateX(120%); opacity:0; z-index:1; pointer-events:none; }
-  .np-disc-slide.hidden-off-left{ transform:translateX(-120%); opacity:0; z-index:0; pointer-events:none; }
-  .np-disc-slide.hidden-off-right{ transform:translateX(120%); opacity:0; z-index:0; pointer-events:none; }
+  .np-disc-slide.current{ z-index:2; }
   .np-disc-slide.current.paused-state{ transform:scale(0.92); }
   .np-disc-slide img{ width:100%; height:100%; object-fit:cover; display:block; }
   .np-glow{
@@ -585,7 +579,7 @@
         <div class="np-disc-slide current" id="np-disc-0">
           <img id="np-cover-0" src="" alt="" style="display:none;">
         </div>
-        <div class="np-disc-slide hidden-off-right" id="np-disc-1">
+        <div class="np-disc-slide" id="np-disc-1" style="transform:translateX(120%);opacity:0;z-index:1;">
           <img id="np-cover-1" src="" alt="" style="display:none;">
         </div>
       </div>
@@ -892,12 +886,6 @@
 
   function renderPlaylistDetail(playlist){
     const coverUrl=findCoverFor(playlist);
-    // Store current state before clearing
-    const currentBg=playlistCover.style.backgroundImage;
-    const currentClass=playlistCover.className;
-    const currentInner=playlistCover.innerHTML;
-
-    // Only update if truly different
     playlistCover.className='hero-cover';playlistCover.innerHTML='';
     if(playlist.type==='recently'){
       playlistCover.style.cssText='background:linear-gradient(135deg,#1b1140,#2a1a5e);';
@@ -906,7 +894,6 @@
       playlistCover.style.cssText='background:linear-gradient(135deg,#c0388a,#5b3fe0);';
       playlistCover.innerHTML=`<div style="width:34%;height:34%;">${HEART_ICON.replace('60%','100%')}</div>`;
     }else if(coverUrl){
-      playlistCover.style.backgroundImage=`url("${coverUrl}")`;
       playlistCover.style.cssText=`background-image:url("${coverUrl}");background-size:cover;background-position:center;`;
     }else{
       playlistCover.classList.add('no-cover');playlistCover.style.cssText=placeholderStyle(playlist.name);
@@ -971,78 +958,64 @@
     animateDiscChange(song,direction);
   }
 
-  function animateDiscChange(song,direction){
-    const nextIndex=state.activeDiscIndex===0?1:0;
-    const oldDisc=state.activeDiscIndex===0?npDisc0:npDisc1;
-    const newDisc=nextIndex===0?npDisc0:npDisc1;
-    const newCover=nextIndex===0?npCover0:npCover1;
-
-    // Prepare new disc
-    newCover.src=song.cover||transparentPixel();
-    newCover.style.display=song.cover?'block':'none';
+  function animateDiscChange(song, direction){
+    const nextIndex = state.activeDiscIndex === 0 ? 1 : 0;
+    const oldDisc = state.activeDiscIndex === 0 ? npDisc0 : npDisc1;
+    const newDisc = nextIndex === 0 ? npDisc0 : npDisc1;
+    const newCover = nextIndex === 0 ? npCover0 : npCover1;
+    
+    newCover.src = song.cover || transparentPixel();
+    newCover.style.display = song.cover ? 'block' : 'none';
     if(!song.cover){
-      newDisc.style.cssText=placeholderStyle(song.artist)+';border-radius:var(--radius-lg);overflow:hidden;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;';
-    }else{
-      newDisc.style.cssText='position:absolute;inset:0;';
+        newDisc.style.cssText = placeholderStyle(song.artist) + ';border-radius:var(--radius-lg);overflow:hidden;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;';
+    } else {
+        newDisc.style.cssText = 'position:absolute;inset:0;';
     }
-
-    // Determine exit/enter classes based on direction
-    // direction: -1 = previous (come from left), 1 = next (come from right), 0 = first load (no animation)
-    if(direction===0){
-      // First load: just snap
-      oldDisc.className='np-disc-slide hidden-off-right';
-      newDisc.className='np-disc-slide current';
-      state.activeDiscIndex=nextIndex;
-      return;
+    
+    oldDisc.style.transition = 'none';
+    newDisc.style.transition = 'none';
+    
+    if(direction === 0){
+        oldDisc.style.transform = 'translateX(120%)';
+        oldDisc.style.opacity = '0';
+        oldDisc.style.zIndex = '1';
+        newDisc.style.transform = 'translateX(0)';
+        newDisc.style.opacity = '1';
+        newDisc.style.zIndex = '2';
+        state.activeDiscIndex = nextIndex;
+        return;
     }
-
-    const comeFromLeft=direction<0;
-
-    // Set initial positions
-    if(comeFromLeft){
-      oldDisc.className='np-disc-slide current';
-      newDisc.className='np-disc-slide';
-      newDisc.style.transform='translateX(-120%)';newDisc.style.opacity='0';
-    }else{
-      oldDisc.className='np-disc-slide current';
-      newDisc.className='np-disc-slide';
-      newDisc.style.transform='translateX(120%)';newDisc.style.opacity='0';
+    
+    const slideLeft = direction > 0;
+    
+    oldDisc.style.transform = 'translateX(0)';
+    oldDisc.style.opacity = '1';
+    oldDisc.style.zIndex = '2';
+    
+    if(slideLeft){
+        newDisc.style.transform = 'translateX(120%)';
+    } else {
+        newDisc.style.transform = 'translateX(-120%)';
     }
-    newDisc.style.zIndex='1';oldDisc.style.zIndex='2';
-
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        newDisc.style.transition='transform .4s cubic-bezier(.25,.8,.3,1), opacity .4s cubic-bezier(.25,.8,.3,1)';
-        oldDisc.style.transition='transform .4s cubic-bezier(.25,.8,.3,1), opacity .4s cubic-bezier(.25,.8,.3,1)';
-
-        if(comeFromLeft){
-          oldDisc.style.transform='translateX(120%)';oldDisc.style.opacity='0';
-          newDisc.style.transform='translateX(0)';newDisc.style.opacity='1';
-          oldDisc.className='np-disc-slide exit-right';
-          newDisc.className='np-disc-slide current';
-        }else{
-          oldDisc.style.transform='translateX(-120%)';oldDisc.style.opacity='0';
-          newDisc.style.transform='translateX(0)';newDisc.style.opacity='1';
-          oldDisc.className='np-disc-slide exit-left';
-          newDisc.className='np-disc-slide current';
-        }
-
-        setTimeout(()=>{
-          oldDisc.style.transition='none';
-          oldDisc.style.transform='';
-          oldDisc.style.opacity='';
-          oldDisc.style.zIndex='';
-          newDisc.style.transition='none';
-          newDisc.style.transform='';
-          newDisc.style.opacity='';
-          newDisc.style.zIndex='';
-          if(comeFromLeft)oldDisc.className='np-disc-slide hidden-off-right';
-          else oldDisc.className='np-disc-slide hidden-off-left';
-        },410);
-      });
-    });
-
-    state.activeDiscIndex=nextIndex;
+    newDisc.style.opacity = '0';
+    newDisc.style.zIndex = '1';
+    
+    newDisc.offsetHeight;
+    
+    oldDisc.style.transition = 'transform .4s cubic-bezier(.25,.8,.3,1), opacity .4s cubic-bezier(.25,.8,.3,1)';
+    newDisc.style.transition = 'transform .4s cubic-bezier(.25,.8,.3,1), opacity .4s cubic-bezier(.25,.8,.3,1)';
+    
+    if(slideLeft){
+        oldDisc.style.transform = 'translateX(-120%)';
+        newDisc.style.transform = 'translateX(0)';
+    } else {
+        oldDisc.style.transform = 'translateX(120%)';
+        newDisc.style.transform = 'translateX(0)';
+    }
+    oldDisc.style.opacity = '0';
+    newDisc.style.opacity = '1';
+    
+    state.activeDiscIndex = nextIndex;
   }
 
   function highlightActiveRow(song){
@@ -1222,7 +1195,3 @@ if('serviceWorker' in navigator){
 </script>
 </body>
 </html>
-
-
-
-
