@@ -152,6 +152,31 @@
   }
   .home-header-actions .icon-btn:active{ transform:scale(0.9); }
 
+  .alpha-index{
+    position:relative; z-index:3;
+    display:flex; align-items:flex-end; justify-content:space-between;
+    padding:0 16px;
+    height:0;
+    overflow:visible;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease, height .25s ease;
+    flex-shrink:0;
+  }
+  .alpha-index.visible{ opacity:1; height:22px; pointer-events:auto; margin-bottom:4px; }
+  .alpha-index span{
+    flex:1; text-align:center; line-height:1;
+    font-size:8px; font-weight:600; color:rgba(255,255,255,0.22);
+    transition:all 0.2s cubic-bezier(0.25, 0.8, 0.3, 1);
+    transform:scale(1);
+  }
+  .alpha-index span.near{ font-size:10.5px; color:rgba(255,255,255,0.5); transform:scale(1.15); }
+  .alpha-index span.current{
+    font-size:14px; font-weight:800; color:var(--violet-2);
+    text-shadow:0 0 12px rgba(167,139,250,0.95), 0 0 24px rgba(139,92,246,0.5);
+    transform:scale(1.35);
+  }
+
   .playlist-grid{
     position:relative; z-index:2; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
     padding:6px 18px calc(var(--safe-bottom) + 90px); display:grid; grid-template-columns:1fr 1fr; gap:16px; align-content:start;
@@ -341,7 +366,24 @@
   .mini-info p{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   #mini-title{ font-size:13px; font-weight:600; }
   #mini-artist{ font-size:11px; color:var(--text-faint); margin-top:1px; }
-  .mini-player .icon-btn{ width:34px; height:34px; }
+  
+  .mini-play-ring-wrap{
+    position:relative; width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .mini-play-ring-wrap svg.mini-play-ring-svg{
+    position:absolute; inset:-4px; width:42px; height:42px;
+    transform:rotate(-90deg);
+    pointer-events:none;
+  }
+  .mini-play-ring-bg{ fill:none; stroke:rgba(255,255,255,0.06); stroke-width:2; }
+  .mini-play-ring-fg{
+    fill:none; stroke:var(--violet-2); stroke-width:2; stroke-linecap:round;
+    filter:drop-shadow(0 0 5px rgba(167,139,250,0.9)) drop-shadow(0 0 14px rgba(139,92,246,0.6));
+    transition:stroke-dashoffset 0.2s linear;
+  }
+  .mini-play-ring-wrap .icon-btn{ position:relative; z-index:1; width:34px; height:34px; }
 
   .now-playing{
     background:var(--near-black); transform:translateY(100%);
@@ -417,12 +459,12 @@
   .queue-heading{ font-size:14px; font-weight:700; margin-bottom:10px; flex-shrink:0; }
   .queue-heading-row{ display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
   .queue-view{ display:flex; flex-direction:column; min-height:0; height:100%; }
-  .queue-add-btn{ display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:var(--violet-2); padding:7px 12px; border-radius:100px; background:var(--glass-bg-strong); border:1px solid var(--glass-border); margin-bottom:10px; }
+  .queue-add-btn{ display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:var(--violet-2); padding:7px 12px; border-radius:100px; background:var(--glass-bg-strong); border:1px solid var(--glass-border); margin-bottom:10px; transition:all .2s ease; }
   .queue-add-btn:active{ transform:scale(0.95); }
-  .queue-row-add{ width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--glass-bg-strong); border:1px solid var(--glass-border); color:var(--violet-2); flex-shrink:0; }
-  .queue-row-add.added{ color:#7ee0a8; }
+  .queue-row-add{ width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--glass-bg-strong); border:1px solid var(--glass-border); color:var(--violet-2); flex-shrink:0; transition:all .2s ease; }
+  .queue-row-add.added{ color:#7ee0a8; background:rgba(126,224,168,0.15); border-color:rgba(126,224,168,0.3); }
   .queue-list{ overflow-y:auto; -webkit-overflow-scrolling:touch; }
-  .queue-row{ display:flex; align-items:center; gap:10px; padding:9px 4px; border-radius:10px; }
+  .queue-row{ display:flex; align-items:center; gap:10px; padding:9px 4px; border-radius:10px; transition:background .2s ease; }
   .queue-row:active{ background:var(--glass-bg); }
   .queue-cover{ width:34px; height:34px; border-radius:8px; background-size:cover; background-position:center; flex-shrink:0; }
   .queue-row-main{ flex:1; min-width:0; }
@@ -430,6 +472,27 @@
   .queue-row-artist{ font-size:11px; color:var(--text-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .queue-row-duration{ font-size:11px; color:var(--text-faint); flex-shrink:0; }
   .queue-empty{ font-size:12px; color:var(--text-faint); padding:14px 4px; }
+
+  .queue-add-search-wrap{
+    flex-shrink:0;
+    display:flex; align-items:center; gap:9px;
+    background:rgba(255,255,255,0.07); border:1px solid var(--glass-border);
+    border-radius:100px; padding:9px 14px; margin-bottom:12px;
+    transition:all .25s ease;
+  }
+  .queue-add-search-wrap:focus-within{ border-color:var(--violet-2); box-shadow:0 0 14px rgba(139,92,246,0.2); }
+  .queue-add-search-wrap svg{ flex-shrink:0; color:var(--text-faint); }
+  #queue-add-search{
+    flex:1; min-width:0; background:none; border:none; outline:none;
+    color:var(--text); font-size:14px; font-family:inherit;
+  }
+  #queue-add-search::placeholder{ color:var(--text-faint); }
+
+  .queue-list-lg .queue-row{ padding:11px 4px; gap:14px; }
+  .queue-list-lg .queue-cover{ width:52px; height:52px; border-radius:12px; }
+  .queue-list-lg .queue-row-title{ font-size:14.5px; }
+  .queue-list-lg .queue-row-artist{ font-size:12.5px; margin-top:2px; }
+  .queue-list-lg .queue-row-add{ width:30px; height:30px; }
 
   .hidden{ display:none!important; }
 </style>
@@ -476,6 +539,7 @@
       </button>
     </div>
   </header>
+  <div class="alpha-index" id="alpha-index"></div>
   <div id="playlist-grid" class="playlist-grid"></div>
 </section>
 
@@ -511,7 +575,7 @@
   </div>
   <div class="settings-footer">
     <h3>Majid Music Player</h3>
-    <p>Powered By Majid • Version 2.1</p>
+    <p>Powered By Majid • Version 2.2</p>
   </div>
 </section>
 
@@ -547,7 +611,13 @@
     <p id="mini-title">—</p>
     <p id="mini-artist">—</p>
   </div>
-  <button id="mini-playpause" class="icon-btn" aria-label="Play or pause"></button>
+  <div class="mini-play-ring-wrap" id="mini-play-ring-wrap">
+    <svg class="mini-play-ring-svg" viewBox="0 0 42 42">
+      <circle class="mini-play-ring-bg" cx="21" cy="21" r="18"/>
+      <circle class="mini-play-ring-fg" id="mini-play-ring-fg" cx="21" cy="21" r="18"/>
+    </svg>
+    <button id="mini-playpause" class="icon-btn" aria-label="Play or pause"></button>
+  </div>
 </div>
 
 <section id="screen-now-playing" class="screen now-playing">
@@ -613,7 +683,11 @@
     </div>
     <div class="queue-view hidden" id="queue-add-view">
       <div class="queue-heading-row"><p class="queue-heading">Add from All Songs</p><button class="queue-add-btn" id="btn-queue-add-done">Done</button></div>
-      <div id="queue-add-list" class="queue-list"></div>
+      <div class="queue-add-search-wrap">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="queue-add-search" placeholder="Search songs or artists" autocomplete="off">
+      </div>
+      <div id="queue-add-list" class="queue-list queue-list-lg"></div>
     </div>
   </div>
 </section>
@@ -635,7 +709,7 @@
   const AUDIO_EXT=['mp3','m4a','mp4','aac','wav','flac','ogg','wma','aiff','alac'];
   const $=id=>document.getElementById(id);
 
-  const screenIntro=$('screen-intro'),screenHome=$('screen-home'),screenPlaylist=$('screen-playlist'),screenNowPlaying=$('screen-now-playing'),screenSearch=$('screen-search'),screenSettings=$('screen-settings'),loadingOverlay=$('loading-overlay'),loadingText=$('loading-text'),loadingProgress=$('loading-progress'),loaderFg=$('loader-fg'),fileInput=$('file-input'),playlistGrid=$('playlist-grid'),libraryStats=$('library-stats'),playlistHero=$('playlist-hero'),playlistCover=$('playlist-cover'),playlistTitle=$('playlist-title'),playlistTitleCompact=$('playlist-title-compact'),playlistMeta=$('playlist-meta'),playlistMetaCompact=$('playlist-meta-compact'),songList=$('song-list'),searchInput=$('search-input'),searchResults=$('search-results'),miniPlayer=$('mini-player'),miniCover=$('mini-cover'),miniTitle=$('mini-title'),miniArtist=$('mini-artist'),miniPlayPause=$('mini-playpause'),npDiscTrack=$('np-disc-track'),npDisc0=$('np-disc-0'),npDisc1=$('np-disc-1'),npCover0=$('np-cover-0'),npCover1=$('np-cover-1'),npTitle=$('np-title'),npArtist=$('np-artist'),npSource=$('np-source'),npSeek=$('np-seek'),npCurrentTime=$('np-current-time'),npDuration=$('np-duration'),btnPlayPause=$('btn-playpause'),btnShuffle=$('btn-shuffle'),btnRepeat=$('btn-repeat'),btnFavorite=$('btn-favorite'),queuePanel=$('np-queue-panel'),queueView=$('queue-view'),queueList=$('queue-list'),queueAddView=$('queue-add-view'),queueAddList=$('queue-add-list'),audio=$('audio-el'),probeAudio=$('probe-audio'),dynamicBg=$('dynamic-bg'),dynamicBgIndicator=$('dynamic-bg-indicator');
+  const screenIntro=$('screen-intro'),screenHome=$('screen-home'),screenPlaylist=$('screen-playlist'),screenNowPlaying=$('screen-now-playing'),screenSearch=$('screen-search'),screenSettings=$('screen-settings'),loadingOverlay=$('loading-overlay'),loadingText=$('loading-text'),loadingProgress=$('loading-progress'),loaderFg=$('loader-fg'),fileInput=$('file-input'),playlistGrid=$('playlist-grid'),alphaIndex=$('alpha-index'),libraryStats=$('library-stats'),playlistHero=$('playlist-hero'),playlistCover=$('playlist-cover'),playlistTitle=$('playlist-title'),playlistTitleCompact=$('playlist-title-compact'),playlistMeta=$('playlist-meta'),playlistMetaCompact=$('playlist-meta-compact'),songList=$('song-list'),searchInput=$('search-input'),searchResults=$('search-results'),miniPlayer=$('mini-player'),miniCover=$('mini-cover'),miniTitle=$('mini-title'),miniArtist=$('mini-artist'),miniPlayPause=$('mini-playpause'),miniPlayRingFg=$('mini-play-ring-fg'),npDiscTrack=$('np-disc-track'),npDisc0=$('np-disc-0'),npDisc1=$('np-disc-1'),npCover0=$('np-cover-0'),npCover1=$('np-cover-1'),npTitle=$('np-title'),npArtist=$('np-artist'),npSource=$('np-source'),npSeek=$('np-seek'),npCurrentTime=$('np-current-time'),npDuration=$('np-duration'),btnPlayPause=$('btn-playpause'),btnShuffle=$('btn-shuffle'),btnRepeat=$('btn-repeat'),btnFavorite=$('btn-favorite'),queuePanel=$('np-queue-panel'),queueView=$('queue-view'),queueList=$('queue-list'),queueAddView=$('queue-add-view'),queueAddList=$('queue-add-list'),queueAddSearch=$('queue-add-search'),audio=$('audio-el'),probeAudio=$('probe-audio'),dynamicBg=$('dynamic-bg'),dynamicBgIndicator=$('dynamic-bg-indicator');
 
   miniPlayPause.innerHTML=ICON_PLAY_SM;btnPlayPause.innerHTML=ICON_PLAY;
 
@@ -663,6 +737,8 @@
   function probeDuration(url){return new Promise(resolve=>{const onLoaded=()=>{cleanup();resolve(probeAudio.duration||0);};const onError=()=>{cleanup();resolve(0);};function cleanup(){probeAudio.removeEventListener('loadedmetadata',onLoaded);probeAudio.removeEventListener('error',onError);}probeAudio.addEventListener('loadedmetadata',onLoaded);probeAudio.addEventListener('error',onError);probeAudio.src=url;});}
 
   const CIRCUMFERENCE=2*Math.PI*30;
+  const MINI_PLAY_RING_CIRC=2*Math.PI*18;
+  if(miniPlayRingFg){ miniPlayRingFg.style.strokeDasharray=MINI_PLAY_RING_CIRC; miniPlayRingFg.style.strokeDashoffset=MINI_PLAY_RING_CIRC; }
   fileInput.addEventListener('change',e=>{const files=e.target.files;if(files&&files.length)processFiles(files);});
   $('btn-choose-folder').addEventListener('click',()=>fileInput.click());
   $('btn-refresh-folder').addEventListener('click',()=>fileInput.click());
@@ -745,6 +821,7 @@
     if(state.favorites.size>0){const favSongs=state.allSongs.filter(s=>state.favorites.has(s.id));if(favSongs.length)entries.push({name:'Favorites',type:'favorites',songs:favSongs});}
     state.artistPlaylists.forEach(p=>entries.push(p));
     entries.forEach(pl=>playlistGrid.appendChild(createPlaylistCard(pl)));
+    buildAlphaLetterMap();
   }
 
   function findCoverFor(playlist){
@@ -765,6 +842,97 @@
     const sub=document.createElement('p');sub.className='card-sub';sub.textContent=playlist.songs.length+(playlist.songs.length===1?' song':' songs');
     card.appendChild(cover);card.appendChild(title);card.appendChild(sub);card.addEventListener('click',()=>openPlaylist(playlist));return card;
   }
+
+  /* A-Z SCROLL INDEX - ignores Recently Played */
+  const ALPHABET='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  ALPHABET.forEach(letter=>{
+    const span=document.createElement('span');
+    span.textContent=letter;
+    span.dataset.letter=letter;
+    alphaIndex.appendChild(span);
+  });
+  const alphaLetterEls=Array.from(alphaIndex.children);
+  let alphaLetterMap=[];
+  let alphaHideTimer=null;
+
+  function buildAlphaLetterMap(){
+    alphaLetterMap=[];
+    const seen=new Set();
+    Array.from(playlistGrid.children).forEach(card=>{
+      const label=card.querySelector('.card-title');
+      if(!label)return;
+      if(label.textContent==='Recently Played')return;
+      const letter=(label.textContent[0]||'').toUpperCase();
+      if(!/[A-Z]/.test(letter))return;
+      if(seen.has(letter))return;
+      seen.add(letter);
+      alphaLetterMap.push({letter,offsetTop:card.offsetTop});
+    });
+    alphaLetterMap.sort((a,b)=>a.offsetTop-b.offsetTop);
+  }
+
+  function updateAlphaHighlight(currentLetter){
+    const idx=ALPHABET.indexOf(currentLetter);
+    alphaLetterEls.forEach(span=>{
+      const li=ALPHABET.indexOf(span.dataset.letter);
+      const dist=idx<0?99:Math.abs(li-idx);
+      span.classList.toggle('current',dist===0);
+      span.classList.toggle('near',dist===1);
+    });
+  }
+
+  function currentLetterForScroll(scrollTop){
+    if(alphaLetterMap.length===0)return null;
+    let current=alphaLetterMap[0].letter;
+    for(const entry of alphaLetterMap){
+      if(entry.offsetTop<=scrollTop+40)current=entry.letter;
+      else break;
+    }
+    return current;
+  }
+
+  function showAlphaIndex(){
+    alphaIndex.classList.add('visible');
+    clearTimeout(alphaHideTimer);
+    alphaHideTimer=setTimeout(()=>{alphaIndex.classList.remove('visible');},1000);
+  }
+
+  function scrollToLetter(letter){
+    if(alphaLetterMap.length===0)return;
+    let target=alphaLetterMap.find(e=>e.letter===letter);
+    if(!target){
+      const idx=ALPHABET.indexOf(letter);
+      let best=null,bestDist=Infinity;
+      alphaLetterMap.forEach(e=>{
+        const d=Math.abs(ALPHABET.indexOf(e.letter)-idx);
+        if(d<bestDist){bestDist=d;best=e;}
+      });
+      target=best;
+    }
+    if(target){
+      playlistGrid.scrollTop=target.offsetTop;
+      updateAlphaHighlight(target.letter);
+    }
+    showAlphaIndex();
+  }
+
+  function jumpToLetterFromX(clientX){
+    const rect=alphaIndex.getBoundingClientRect();
+    if(rect.width===0)return;
+    const relX=Math.min(Math.max(clientX-rect.left,0),rect.width-1);
+    const idx=Math.min(Math.floor((relX/rect.width)*26),25);
+    scrollToLetter(ALPHABET[idx]);
+  }
+
+  playlistGrid.addEventListener('scroll',()=>{
+    const letter=currentLetterForScroll(playlistGrid.scrollTop);
+    if(letter)updateAlphaHighlight(letter);
+    showAlphaIndex();
+  },{passive:true});
+
+  alphaIndex.addEventListener('touchstart',(e)=>{jumpToLetterFromX(e.touches[0].clientX);},{passive:true});
+  alphaIndex.addEventListener('touchmove',(e)=>{jumpToLetterFromX(e.touches[0].clientX);},{passive:true});
+  alphaIndex.addEventListener('click',(e)=>{jumpToLetterFromX(e.clientX);});
 
   function updateHeroByProgress(progress){
     const p=Math.max(0,Math.min(1,progress));const root=document.documentElement.style;
@@ -788,12 +956,6 @@
     playlistHero.classList.remove('compact');state.playlistHeroCompact=false;state.heroCompactProgress=0;state.lastScrollY=0;state.scrollDirection=0;updateHeroByProgress(0);songList.scrollTop=0;
   }
 
-  /* ============================================================
-     PLAYLIST HERO COMPACT GESTURE
-     Works via direct touch tracking (not just scroll events) so it
-     also responds correctly when a playlist has too few songs to
-     actually be scrollable (e.g. just 1 song).
-  ============================================================ */
   function enterCompact(){
     if(state.playlistHeroCompact) return;
     state.playlistHeroCompact=true;
@@ -821,36 +983,17 @@
   screenPlaylist.addEventListener('touchmove',(e)=>{
     if(heroTouchStartY===null) return;
     const currentY=e.touches[0].clientY;
-    const deltaFromStart=heroTouchStartY-currentY; // positive = finger moved up (swipe up)
+    const deltaFromStart=heroTouchStartY-currentY;
     const deltaFromLast=heroTouchLastY-currentY;
     heroTouchLastY=currentY;
-
     const SWIPE_THRESHOLD=18;
-
-    // Swipe up anywhere on the playlist screen -> go compact
-    if(deltaFromStart>SWIPE_THRESHOLD && !state.playlistHeroCompact){
-      enterCompact();
-    }
-    // Swipe down while already compact AND the song list is scrolled to (or near) the top
-    // -> expand back. Requiring scrollTop<=0 keeps this from fighting normal scrolling
-    // in the middle of a long list; for short/unscrollable lists scrollTop is always 0,
-    // so a simple downward swipe expands immediately.
-    else if(deltaFromLast<-4 && state.playlistHeroCompact && songList.scrollTop<=0){
-      exitCompact();
-    }
+    if(deltaFromStart>SWIPE_THRESHOLD && !state.playlistHeroCompact){ enterCompact(); }
+    else if(deltaFromLast<-4 && state.playlistHeroCompact && songList.scrollTop<=0){ exitCompact(); }
   },{passive:true});
 
-  screenPlaylist.addEventListener('touchend',()=>{
-    heroTouchStartY=null;
-    heroTouchLastY=null;
-  },{passive:true});
+  screenPlaylist.addEventListener('touchend',()=>{ heroTouchStartY=null; heroTouchLastY=null; },{passive:true});
+  screenPlaylist.addEventListener('touchcancel',()=>{ heroTouchStartY=null; heroTouchLastY=null; },{passive:true});
 
-  screenPlaylist.addEventListener('touchcancel',()=>{
-    heroTouchStartY=null;
-    heroTouchLastY=null;
-  },{passive:true});
-
-  // Kept as a secondary safety net for non-touch input (e.g. trackpad/mouse wheel in a desktop browser)
   songList.addEventListener('scroll',()=>{
     const scrollY=songList.scrollTop;
     const delta=scrollY-state.lastScrollY;
@@ -894,8 +1037,8 @@
 
   audio.addEventListener('timeupdate',()=>{if(state.seeking)return;updateProgressUI();});
   audio.addEventListener('loadedmetadata',()=>{npDuration.textContent=formatTime(audio.duration||state.currentSong.duration);});
-  function updateProgressUI(){const dur=audio.duration||(state.currentSong?state.currentSong.duration:0);if(dur){const pct=(audio.currentTime/dur)*100;npSeek.value=pct;npSeek.style.setProperty('--fill',pct+'%');npCurrentTime.textContent=formatTime(audio.currentTime);if('mediaSession' in navigator&&navigator.mediaSession.setPositionState){try{navigator.mediaSession.setPositionState({duration:dur,playbackRate:audio.playbackRate||1,position:audio.currentTime});}catch(e){}}}}
-  npSeek.addEventListener('input',()=>{state.seeking=true;const dur=audio.duration||(state.currentSong?state.currentSong.duration:0);const t=(npSeek.value/100)*dur;npCurrentTime.textContent=formatTime(t);npSeek.style.setProperty('--fill',npSeek.value+'%');});
+  function updateProgressUI(){const dur=audio.duration||(state.currentSong?state.currentSong.duration:0);if(dur){const pct=(audio.currentTime/dur)*100;npSeek.value=pct;npSeek.style.setProperty('--fill',pct+'%');npCurrentTime.textContent=formatTime(audio.currentTime);if(miniPlayRingFg)miniPlayRingFg.style.strokeDashoffset=MINI_PLAY_RING_CIRC*(1-(pct/100));if('mediaSession' in navigator&&navigator.mediaSession.setPositionState){try{navigator.mediaSession.setPositionState({duration:dur,playbackRate:audio.playbackRate||1,position:audio.currentTime});}catch(e){}}}}
+  npSeek.addEventListener('input',()=>{state.seeking=true;const dur=audio.duration||(state.currentSong?state.currentSong.duration:0);const t=(npSeek.value/100)*dur;npCurrentTime.textContent=formatTime(t);npSeek.style.setProperty('--fill',npSeek.value+'%');if(miniPlayRingFg)miniPlayRingFg.style.strokeDashoffset=MINI_PLAY_RING_CIRC*(1-(npSeek.value/100));});
   npSeek.addEventListener('change',()=>{const dur=audio.duration||(state.currentSong?state.currentSong.duration:0);audio.currentTime=(npSeek.value/100)*dur;state.seeking=false;});
 
   function openNowPlaying(){screenNowPlaying.classList.add('open');state.npOpen=true;}
@@ -906,10 +1049,17 @@
   function closeQueue(){state.queueOpen=false;queuePanel.classList.remove('open');showQueueView();}
   $('btn-np-queue').addEventListener('click',toggleQueue);
   function showQueueView(){state.addPickerOpen=false;queueView.classList.remove('hidden');queueAddView.classList.add('hidden');}
-  function showAddView(){state.addPickerOpen=true;queueView.classList.add('hidden');queueAddView.classList.remove('hidden');renderAddList();}
+  function showAddView(){state.addPickerOpen=true;queueView.classList.add('hidden');queueAddView.classList.remove('hidden');queueAddSearch.value='';renderAddList('');setTimeout(()=>queueAddSearch.focus(),300);}
   $('btn-queue-add').addEventListener('click',showAddView);$('btn-queue-add-done').addEventListener('click',showQueueView);
+  queueAddSearch.addEventListener('input',()=>{renderAddList(queueAddSearch.value);});
 
-  function renderAddList(){queueAddList.innerHTML='';if(state.allSongs.length===0){queueAddList.innerHTML='<p class="queue-empty">Your library is empty.</p>';return;}state.allSongs.forEach(song=>{const row=document.createElement('div');row.className='queue-row';const coverStyle=song.cover?`background-image:url("${song.cover}")`:placeholderStyle(song.artist);row.innerHTML=`<div class="queue-cover" style="${coverStyle}"></div><div class="queue-row-main"><p class="queue-row-title">${escapeHtml(song.title)}</p><p class="queue-row-artist">${escapeHtml(song.artist)}</p></div><button class="queue-row-add" aria-label="Add to Up Next"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>`;const addBtn=row.querySelector('.queue-row-add');addBtn.addEventListener('click',e=>{e.stopPropagation();addToQueueNext(song);addBtn.classList.add('added');addBtn.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg>';});queueAddList.appendChild(row);});}
+  function renderAddList(query){
+    queueAddList.innerHTML='';
+    const q=(query||'').trim().toLowerCase();
+    const source=q?state.allSongs.filter(s=>s.title.toLowerCase().includes(q)||s.artist.toLowerCase().includes(q)):state.allSongs;
+    if(source.length===0){queueAddList.innerHTML=q?'<p class="queue-empty">No songs found.</p>':'<p class="queue-empty">Your library is empty.</p>';return;}
+    source.forEach(song=>{const row=document.createElement('div');row.className='queue-row';const coverStyle=song.cover?`background-image:url("${song.cover}")`:placeholderStyle(song.artist);row.innerHTML=`<div class="queue-cover" style="${coverStyle}"></div><div class="queue-row-main"><p class="queue-row-title">${escapeHtml(song.title)}</p><p class="queue-row-artist">${escapeHtml(song.artist)}</p></div><button class="queue-row-add" aria-label="Add to Up Next"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>`;const addBtn=row.querySelector('.queue-row-add');addBtn.addEventListener('click',e=>{e.stopPropagation();addToQueueNext(song);addBtn.classList.add('added');addBtn.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg>';});queueAddList.appendChild(row);});
+  }
   function addToQueueNext(song){if(!state.currentSong){const tempPlaylist={name:'All Songs',type:'all',songs:state.allSongs};playSong(tempPlaylist,state.allSongs.findIndex(s=>s.id===song.id),0);openNowPlaying();return;}const newIndex=state.queueSongs.length;state.queueSongs.push(song);state.orderList.splice(state.pos+1,0,newIndex);renderQueueList();}
   function renderQueueList(){queueList.innerHTML='';const upcoming=state.orderList.slice(state.pos+1);if(upcoming.length===0){queueList.innerHTML='<p class="queue-empty">No more songs queued.</p>';return;}upcoming.forEach(songIdx=>{const song=state.queueSongs[songIdx];const row=document.createElement('div');row.className='queue-row';const coverStyle=song.cover?`background-image:url("${song.cover}")`:placeholderStyle(song.artist);row.innerHTML=`<div class="queue-cover" style="${coverStyle}"></div><div class="queue-row-main"><p class="queue-row-title">${escapeHtml(song.title)}</p><p class="queue-row-artist">${escapeHtml(song.artist)}</p></div><span class="queue-row-duration">${formatTime(song.duration)}</span>`;row.addEventListener('click',()=>{state.pos=state.orderList.indexOf(songIdx,state.pos+1);loadCurrentSong(1);audio.play().catch(()=>{});closeQueue();});queueList.appendChild(row);});}
 })();
